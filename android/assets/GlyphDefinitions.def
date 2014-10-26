@@ -1,0 +1,13 @@
+@=player
+.=ground
+#=wall
+C=computer
+B=bed
+T=television
+O=door
+F=fridge
+s=sink
+t=toilet
+S=shower
+ =space
+?=empty
