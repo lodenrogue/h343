@@ -34,6 +34,11 @@ public abstract class State {
 	 * @param batch SpriteBatch used to render components.
 	 */
 	public abstract void render(SpriteBatch batch);
+	
+	public final void updateAndRender(SpriteBatch batch){
+		update();
+		render(batch);
+	}
 
 	/**
 	 * Called when resources need to be released. Typically, when this state

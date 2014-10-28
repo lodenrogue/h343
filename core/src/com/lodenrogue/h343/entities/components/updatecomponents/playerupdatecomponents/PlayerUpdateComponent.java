@@ -12,9 +12,9 @@ import com.lodenrogue.h343.entities.components.updatecomponents.UpdateComponent;
  */
 
 public class PlayerUpdateComponent implements UpdateComponent {
-	UpdateComponent position = new PositionUpdateComponent();
-	UpdateComponent movement = new PlayerMovement();
-	UpdateComponent fov = new PlayerFieldOfView();
+	private UpdateComponent position = new PositionUpdateComponent();
+	private UpdateComponent movement = new PlayerMovement();
+	private UpdateComponent fov = new PlayerFieldOfView();
 
 	@Override
 	public void update(Entity entity) {

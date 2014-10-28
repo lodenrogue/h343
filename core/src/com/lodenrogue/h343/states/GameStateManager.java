@@ -24,7 +24,7 @@ public class GameStateManager {
 	 * @param sb
 	 */
 	public void render(SpriteBatch sb) {
-		states.peek().render(sb);
+		states.peek().updateAndRender(sb);
 	}
 
 	/**

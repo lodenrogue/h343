@@ -1,7 +1,6 @@
 package com.lodenrogue.h343.states;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.lodenrogue.h343.H343;
@@ -58,18 +57,11 @@ public class PlayState extends State {
 
 	@Override
 	public void render(SpriteBatch batch) {
-		update();
-
-		Gdx.gl.glClearColor(0, 0, 0, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		batch.setProjectionMatrix(camera.combined);
-
-		batch.begin();
 		map.render(batch);
 		if (debug) {
 			debugRender(batch);
 		}
-		batch.end();
 	}
 
 	@Override
@@ -80,15 +72,16 @@ public class PlayState extends State {
 	private void debugRender(SpriteBatch batch) {
 		Entity player = entities.getEntityById("player");
 		Position pPos = player.getPosition();
-		float x = camera.position.x - Gdx.graphics.getWidth() / 2;
-		float y = camera.position.y + Gdx.graphics.getHeight() / 2;
+		float x = camera.position.x - H343.WIDTH/2;
+		float y = camera.position.y + H343.HEIGHT / 2;
 		font.draw(batch, "Player position: (" + pPos.getX() + ", " + pPos.getY() + ") fps: " + Gdx.graphics.getFramesPerSecond(), x, y);
 		font.draw(batch, "Arrow keys to move. E to open doors. (O)", x, y - 20f);
 	}
 
 	private void initCamera() {
-		camera = new GameCamera(H343.WIDTH, H343.HEIGHT);
-		camera.setToOrtho(false);
+		camera = new GameCamera();
+		camera.setToOrtho(false, H343.WIDTH, H343.HEIGHT);
+		H343.viewport.setCamera(camera);
 		GameManager.setCamera(camera);
 	}
 

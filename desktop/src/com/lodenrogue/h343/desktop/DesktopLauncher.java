@@ -11,6 +11,5 @@ public class DesktopLauncher {
 		config.height = H343.HEIGHT;
 		config.title = H343.TITLE;
 		new LwjglApplication(new H343(), config);
-
 	}
 }

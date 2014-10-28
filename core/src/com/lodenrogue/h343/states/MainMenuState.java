@@ -2,7 +2,6 @@ package com.lodenrogue.h343.states;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -40,16 +39,8 @@ public class MainMenuState extends State {
 
 	@Override
 	public void render(SpriteBatch batch) {
-		update();
-
-		Gdx.gl.glClearColor(0, 0, 0, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		batch.setProjectionMatrix(camera.combined);
-
-		batch.begin();
 		font.draw(batch, "Main Menu", H343.WIDTH / 2 - 50, H343.HEIGHT - 100);
-		batch.end();
-
 	}
 
 	@Override

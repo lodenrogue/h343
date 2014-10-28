@@ -6,8 +6,8 @@ import com.lodenrogue.h343.entities.Entity;
 
 public class GameCamera extends OrthographicCamera {
 
-	public GameCamera(float viewportWidth, float viewportHeight) {
-		super(viewportWidth, viewportHeight);
+	public GameCamera() {
+		super();
 	}
 
 	public void updatePosistion(Entity followTarget) {
