@@ -6,6 +6,9 @@ import com.lodenrogue.h343.states.GameStateManager;
 import com.lodenrogue.h343.states.PlayState;
 import com.lodenrogue.h343.utilities.managers.SpriteManager;
 
+/**
+ * H343 Application Adaptor
+ */
 public class H343 extends ApplicationAdapter {
 	public static final int WIDTH = 640;
 	public static final int HEIGHT = 480;
