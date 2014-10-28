@@ -14,7 +14,25 @@ import com.lodenrogue.h343.utilities.managers.GameManager;
 
 public class PlayerFieldOfView implements UpdateComponent {
 	private Entity[][] map;
-	private double distance = 9;
+	private int distance;
+
+	/**
+	 * Create a PlayerFieldOfView component with a view distance value of
+	 * 11.
+	 */
+	public PlayerFieldOfView() {
+		this(11);
+	}
+
+	/**
+	 * Creates a PlayerFieldOfView component with a given view distance
+	 * value.
+	 * 
+	 * @param viewDistance Distance used calculate for field of view.
+	 */
+	public PlayerFieldOfView(int viewDistance) {
+		distance = viewDistance;
+	}
 
 	@Override
 	public void update(Entity entity) {
@@ -66,7 +84,6 @@ public class PlayerFieldOfView implements UpdateComponent {
 		targetMinY = targetMinY < 0 ? 0 : targetMinY;
 		targetMaxY = targetMaxY > map.length ? map.length : targetMaxY;
 
-		// For every X and Y on the map
 		for (int x2 = targetMinX; x2 < targetMaxX; x2++) {
 			for (int y2 = targetMinY; y2 < targetMaxY; y2++) {
 				int dx = Math.abs(x2 - x1);

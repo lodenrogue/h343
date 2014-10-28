@@ -72,7 +72,7 @@ public class PlayState extends State {
 	private void debugRender(SpriteBatch batch) {
 		Entity player = entities.getEntityById("player");
 		Position pPos = player.getPosition();
-		float x = camera.position.x - H343.WIDTH/2;
+		float x = camera.position.x - H343.WIDTH / 2;
 		float y = camera.position.y + H343.HEIGHT / 2;
 		font.draw(batch, "Player position: (" + pPos.getX() + ", " + pPos.getY() + ") fps: " + Gdx.graphics.getFramesPerSecond(), x, y);
 		font.draw(batch, "Arrow keys to move. E to open doors. (O)", x, y - 20f);
