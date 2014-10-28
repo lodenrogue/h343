@@ -14,6 +14,7 @@ import com.lodenrogue.h343.utilities.managers.GameManager;
 
 public class PlayerFieldOfView implements UpdateComponent {
 	private Entity[][] map;
+	private double distance = 9;
 
 	@Override
 	public void update(Entity entity) {
@@ -24,14 +25,7 @@ public class PlayerFieldOfView implements UpdateComponent {
 
 	private void generateFieldOfView(Entity entity, Entity[][] map) {
 		resetMapVisibility(map);
-		rightTop(entity, map);
-		rightBottom(entity, map);
-		leftTop(entity, map);
-		leftBottom(entity, map);
-		bottomLeft(entity, map);
-		bottomRight(entity, map);
-		topLeft(entity, map);
-		topRight(entity, map);
+		handleFieldOfView(entity, map);
 	}
 
 	/**
@@ -57,288 +51,242 @@ public class PlayerFieldOfView implements UpdateComponent {
 		}
 	}
 
-	/**
-	 * Handles right top section of field of view.
-	 * 
-	 * @param entity Owner of this component
-	 * @param map Entity map.
-	 */
-	private void rightTop(Entity entity, Entity[][] map) {
+	private void handleFieldOfView(Entity entity, Entity[][] map) {
 		// X and Y of component owner
 		int x1 = entity.getPosition().getX();
 		int y1 = entity.getPosition().getY();
 
+		int targetMinX = (int) (x1 - distance);
+		int targetMaxX = (int) (x1 + distance);
+		int targetMinY = (int) (y1 - distance);
+		int targetMaxY = (int) (y1 + distance);
+
+		targetMinX = targetMinX < 0 ? 0 : targetMinX;
+		targetMaxX = targetMaxX > map[0].length ? map[0].length : targetMaxX;
+		targetMinY = targetMinY < 0 ? 0 : targetMinY;
+		targetMaxY = targetMaxY > map.length ? map.length : targetMaxY;
+
 		// For every X and Y on the map
-		for (int x2 = 0; x2 < map[0].length; x2++) {
-			for (int y2 = 0; y2 < map.length; y2++) {
-
-				// Find the distance between this point on the
-				// map and the owner entity.
+		for (int x2 = targetMinX; x2 < targetMaxX; x2++) {
+			for (int y2 = targetMinY; y2 < targetMaxY; y2++) {
 				int dx = Math.abs(x2 - x1);
 				int dy = Math.abs(y2 - y1);
 
-				int D = 2 * dy - dx;
-				int y = y1;
+				int D1 = 2 * dy - dx;
+				int D2 = 2 * dx - dy;
 
-				// Iterate through the view section
-				for (int x = x1 + 1; x <= x2; x++) {
-
-					/*
-					 * Set the entity to discovered and if
-					 * the entity is opaque break because we
-					 * can't see through the entity.
-					 */
-					if (D > 0) {
-						y += y < map.length - 1 ? 1 : 0;
-
-						setDiscovered(map, y, x);
-						if (map[y][x].isOpaque()) {
-							break;
-						}
-						D = D + (2 * dy - 2 * dx);
-					}
-					else {
-						setDiscovered(map, y, x);
-						if (map[y][x].isOpaque()) {
-							break;
-						}
-						D = D + (2 * dy);
-					}
-				}
+				rightQuadrant(entity, map, x1, y1, x2, y2, dx, dy, D1);
+				leftQuadrant(entity, map, x1, y1, x2, y2, dx, dy, D2);
+				bottomQuadrant(entity, map, x1, y1, x2, y2, dx, dy, D2);
+				topQuadrant(entity, map, x1, y1, x2, y2, dx, dy, D2);
 			}
 		}
 	}
 
-	private void rightBottom(Entity entity, Entity[][] map) {
-		int x1 = entity.getPosition().getX();
-		int y1 = entity.getPosition().getY();
+	private void rightQuadrant(Entity entity, Entity[][] map, int x1, int y1, int x2, int y2, int dx, int dy, int D) {
+		int Delta = D;
+		int ya = y1;
+		int yb = y1;
+		boolean yaDone = false;
+		boolean ybDone = false;
 
-		for (int x2 = 0; x2 < map[0].length; x2++) {
-			for (int y2 = 0; y2 < map.length; y2++) {
-				int dx = Math.abs(x2 - x1);
-				int dy = Math.abs(y2 - y1);
+		for (int x = x1 + 1; x <= x2; x++) {
+			if (Delta > 0) {
+				ya += ya < map.length - 1 ? 1 : 0;
+				yb -= yb > 0 ? 1 : 0;
 
-				int D = 2 * dy - dx;
-				int y = y1;
-				for (int x = x1 + 1; x <= x2; x++) {
-					if (D > 0) {
-						y -= y > 0 ? 1 : 0;
-
-						setDiscovered(map, y, x);
-						if (map[y][x].isOpaque()) {
-							break;
-						}
-						D = D + (2 * dy - 2 * dx);
-					}
-					else {
-						setDiscovered(map, y, x);
-						if (map[y][x].isOpaque()) {
-							break;
-						}
-						D = D + (2 * dy);
+				if (!yaDone) {
+					setDiscovered(map, ya, x);
+					if (map[ya][x].isOpaque()) {
+						yaDone = true;
 					}
 				}
+				if (!ybDone) {
+					setDiscovered(map, yb, x);
+					if (map[yb][x].isOpaque()) {
+						ybDone = true;
+					}
+				}
+
+				if (yaDone && ybDone) {
+					break;
+				}
+				Delta = Delta + (2 * dy - 2 * dx);
+			}
+			else {
+				if (!yaDone) {
+					setDiscovered(map, ya, x);
+					if (map[ya][x].isOpaque()) {
+						yaDone = true;
+					}
+				}
+				if (!ybDone) {
+					setDiscovered(map, yb, x);
+					if (map[yb][x].isOpaque()) {
+						ybDone = true;
+					}
+				}
+
+				if (yaDone && ybDone) {
+					break;
+				}
+				Delta = Delta + (2 * dy);
 			}
 		}
 	}
 
-	private void leftTop(Entity entity, Entity[][] map) {
-		int x1 = entity.getPosition().getX();
-		int y1 = entity.getPosition().getY();
+	private void leftQuadrant(Entity entity, Entity[][] map, int x1, int y1, int x2, int y2, int dx, int dy, int D) {
+		int Delta = D;
+		int ya = y1;
+		int yb = y1;
+		boolean yaDone = false;
+		boolean ybDone = false;
 
-		for (int x2 = 0; x2 < map[0].length; x2++) {
-			for (int y2 = 0; y2 < map.length; y2++) {
-				int dx = Math.abs(x2 - x1);
-				int dy = Math.abs(y2 - y1);
+		for (int x = x1 - 1; x >= 0; x--) {
+			if (Delta > 0) {
+				ya += ya < map.length - 1 ? 1 : 0;
+				yb -= yb > 0 ? 1 : 0;
 
-				int D = 2 * dx - dy;
-
-				int y = y1;
-				for (int x = x1 - 1; x >= 0; x--) {
-					if (D > 0) {
-						y += y < map.length - 1 ? 1 : 0;
-
-						setDiscovered(map, y, x);
-						if (map[y][x].isOpaque()) {
-							break;
-						}
-						D = D + (2 * dx - 2 * dy);
-					}
-					else {
-						setDiscovered(map, y, x);
-						if (map[y][x].isOpaque()) {
-							break;
-						}
-						D = D + (2 * dx);
+				if (!yaDone) {
+					setDiscovered(map, ya, x);
+					if (map[ya][x].isOpaque()) {
+						yaDone = true;
 					}
 				}
+				if (!ybDone) {
+					setDiscovered(map, yb, x);
+					if (map[yb][x].isOpaque()) {
+						ybDone = true;
+					}
+				}
+
+				if (yaDone && ybDone) {
+					break;
+				}
+				Delta = Delta + (2 * dx - 2 * dy);
+			}
+			else {
+				if (!yaDone) {
+					setDiscovered(map, ya, x);
+					if (map[ya][x].isOpaque()) {
+						yaDone = true;
+					}
+				}
+				if (!ybDone) {
+					setDiscovered(map, yb, x);
+					if (map[yb][x].isOpaque()) {
+						ybDone = true;
+					}
+				}
+
+				if (yaDone && ybDone) {
+					break;
+				}
+				Delta = Delta + (2 * dx);
 			}
 		}
 	}
 
-	private void leftBottom(Entity entity, Entity[][] map) {
-		int x1 = entity.getPosition().getX();
-		int y1 = entity.getPosition().getY();
+	private void bottomQuadrant(Entity entity, Entity[][] map, int x1, int y1, int x2, int y2, int dx, int dy, int D) {
+		int Delta = D;
+		int xa = x1;
+		int xb = x1;
+		boolean xaDone = false;
+		boolean xbDone = false;
 
-		for (int x2 = 0; x2 < map[0].length; x2++) {
-			for (int y2 = 0; y2 < map.length; y2++) {
-				int dx = Math.abs(x2 - x1);
-				int dy = Math.abs(y2 - y1);
+		for (int y = y1 - 1; y >= 0; y--) {
+			if (Delta > 0) {
+				xa -= xa > 0 ? 1 : 0;
+				xb += xb < map[0].length - 1 ? 1 : 0;
 
-				int D = 2 * dx - dy;
-
-				int y = y1;
-				for (int x = x1 - 1; x >= 0; x--) {
-					if (D > 0) {
-						y -= y > 0 ? 1 : 0;
-
-						setDiscovered(map, y, x);
-						if (map[y][x].isOpaque()) {
-							break;
-						}
-						D = D + (2 * dx - 2 * dy);
-					}
-					else {
-						setDiscovered(map, y, x);
-						if (map[y][x].isOpaque()) {
-							break;
-						}
-						D = D + (2 * dx);
+				if (!xaDone) {
+					setDiscovered(map, y, xa);
+					if (map[y][xa].isOpaque()) {
+						xaDone = true;
 					}
 				}
+				if (!xbDone) {
+					setDiscovered(map, y, xb);
+					if (map[y][xb].isOpaque()) {
+						xbDone = true;
+					}
+				}
+
+				if (xaDone && xbDone) {
+					break;
+				}
+				Delta = Delta + (2 * dx - 2 * dy);
+			}
+			else {
+				if (!xaDone) {
+					setDiscovered(map, y, xa);
+					if (map[y][xa].isOpaque()) {
+						xaDone = true;
+					}
+				}
+				if (!xbDone) {
+					setDiscovered(map, y, xb);
+					if (map[y][xb].isOpaque()) {
+						xbDone = true;
+					}
+				}
+
+				if (xaDone && xbDone) {
+					break;
+				}
+				Delta = Delta + (2 * dx);
 			}
 		}
 	}
 
-	private void bottomLeft(Entity entity, Entity[][] map) {
-		int x1 = entity.getPosition().getX();
-		int y1 = entity.getPosition().getY();
+	private void topQuadrant(Entity entity, Entity[][] map, int x1, int y1, int x2, int y2, int dx, int dy, int D) {
+		int Delta = D;
+		int xa = x1;
+		int xb = x1;
+		boolean xaDone = false;
+		boolean xbDone = false;
 
-		for (int x2 = 0; x2 < map[0].length; x2++) {
-			for (int y2 = 0; y2 < map.length; y2++) {
-				int dx = Math.abs(x2 - x1);
-				int dy = Math.abs(y2 - y1);
+		for (int y = y1 + 1; y <= y2; y++) {
+			if (Delta > 0) {
+				xa -= xa > 0 ? 1 : 0;
+				xb += xb < map[0].length - 1 ? 1 : 0;
 
-				int D = 2 * dx - dy;
-
-				int x = x1;
-				for (int y = y1 - 1; y >= 0; y--) {
-					if (D > 0) {
-						x -= x > 0 ? 1 : 0;
-
-						setDiscovered(map, y, x);
-						if (map[y][x].isOpaque()) {
-							break;
-						}
-						D = D + (2 * dx - 2 * dy);
-					}
-					else {
-						setDiscovered(map, y, x);
-						if (map[y][x].isOpaque()) {
-							break;
-						}
-						D = D + (2 * dx);
+				if (!xaDone) {
+					setDiscovered(map, y, xa);
+					if (map[y][xa].isOpaque()) {
+						xaDone = true;
 					}
 				}
+				if (!xbDone) {
+					setDiscovered(map, y, xb);
+					if (map[y][xb].isOpaque()) {
+						xbDone = true;
+					}
+				}
+
+				if (xaDone && xbDone) {
+					break;
+				}
+				Delta = Delta + (2 * dx - 2 * dy);
 			}
-		}
-	}
-
-	private void bottomRight(Entity entity, Entity[][] map) {
-		int x1 = entity.getPosition().getX();
-		int y1 = entity.getPosition().getY();
-
-		for (int x2 = 0; x2 < map[0].length; x2++) {
-			for (int y2 = 0; y2 < map.length; y2++) {
-				int dx = Math.abs(x2 - x1);
-				int dy = Math.abs(y2 - y1);
-
-				int D = 2 * dx - dy;
-				int x = x1;
-				for (int y = y1 - 1; y >= 0; y--) {
-					if (D > 0) {
-						x += x < map[0].length - 1 ? 1 : 0;
-
-						setDiscovered(map, y, x);
-						if (map[y][x].isOpaque()) {
-							break;
-						}
-						D = D + (2 * dx - 2 * dy);
-					}
-					else {
-						setDiscovered(map, y, x);
-						if (map[y][x].isOpaque()) {
-							break;
-						}
-						D = D + (2 * dx);
+			else {
+				if (!xaDone) {
+					setDiscovered(map, y, xa);
+					if (map[y][xa].isOpaque()) {
+						xaDone = true;
 					}
 				}
-			}
-		}
-	}
-
-	private void topLeft(Entity entity, Entity[][] map) {
-		int x1 = entity.getPosition().getX();
-		int y1 = entity.getPosition().getY();
-
-		for (int x2 = 0; x2 < map[0].length; x2++) {
-			for (int y2 = 0; y2 < map.length; y2++) {
-				int dx = Math.abs(x2 - x1);
-				int dy = Math.abs(y2 - y1);
-
-				int D = 2 * dx - dy;
-				int x = x1;
-				for (int y = y1 + 1; y <= y2; y++) {
-					if (D > 0) {
-						x -= x > 0 ? 1 : 0;
-
-						setDiscovered(map, y, x);
-						if (map[y][x].isOpaque()) {
-							break;
-						}
-						D = D + (2 * dx - 2 * dy);
-					}
-					else {
-						setDiscovered(map, y, x);
-						if (map[y][x].isOpaque()) {
-							break;
-						}
-						D = D + (2 * dx);
+				if (!xbDone) {
+					setDiscovered(map, y, xb);
+					if (map[y][xb].isOpaque()) {
+						xbDone = true;
 					}
 				}
-			}
-		}
-	}
 
-	private void topRight(Entity entity, Entity[][] map) {
-		int x1 = entity.getPosition().getX();
-		int y1 = entity.getPosition().getY();
-
-		for (int x2 = 0; x2 < map[0].length; x2++) {
-			for (int y2 = 0; y2 < map.length; y2++) {
-				int dx = Math.abs(x2 - x1);
-				int dy = Math.abs(y2 - y1);
-
-				int D = 2 * dx - dy;
-				int x = x1;
-				for (int y = y1 + 1; y <= y2; y++) {
-					if (D > 0) {
-						x += x < map[0].length - 1 ? 1 : 0;
-
-						setDiscovered(map, y, x);
-						if (map[y][x].isOpaque()) {
-							break;
-						}
-						D = D + (2 * dx - 2 * dy);
-					}
-					else {
-						setDiscovered(map, y, x);
-						if (map[y][x].isOpaque()) {
-							break;
-						}
-						D = D + (2 * dx);
-					}
+				if (xaDone && xbDone) {
+					break;
 				}
+				Delta = Delta + (2 * dx);
 			}
 		}
 	}
