@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.lodenrogue.h343.entities.Entity;
 import com.lodenrogue.h343.entities.components.updatecomponents.UpdateComponent;
+import com.lodenrogue.h343.utilities.GameInfo;
 import com.lodenrogue.h343.utilities.managers.GameManager;
 import com.lodenrogue.h343.utilities.managers.SpriteManager;
 
@@ -29,7 +30,7 @@ public class DoorOpen implements UpdateComponent {
 
 		if (openKey) {
 			if (isOpen) {
-				if (isTargetAdjacent(entity, player)) {
+				if (GameInfo.isTargetAdjacent(entity, player)) {
 					entity.setGlyph('O');
 					entity.getSprite().setTexture(SpriteManager.getImage("door"));
 					entity.setIsOpaque(true);
@@ -39,7 +40,7 @@ public class DoorOpen implements UpdateComponent {
 
 			}
 			else {
-				if (isTargetAdjacent(entity, player)) {
+				if (GameInfo.isTargetAdjacent(entity, player)) {
 					entity.setGlyph('=');
 					entity.getSprite().setTexture(SpriteManager.getImage("opendoor"));
 					entity.setIsOpaque(false);
@@ -49,37 +50,5 @@ public class DoorOpen implements UpdateComponent {
 			}
 		}
 
-	}
-
-	/**
-	 * Checks if the target is adjacent to this entity.
-	 * 
-	 * @param entity First entity to check position.
-	 * @param target Target entity to check if adjacent to first entity.
-	 * @return Returns true if target is adjacent to entity. Else, false.
-	 */
-	private boolean isTargetAdjacent(Entity entity, Entity target) {
-		int eX = entity.getPosition().getX();
-		int eY = entity.getPosition().getY();
-		int tX = target.getPosition().getX();
-		int tY = target.getPosition().getY();
-
-		if (eX - 1 == tX && eY == tY) {
-			return true;
-		}
-
-		if (eX + 1 == tX && eY == tY) {
-			return true;
-		}
-
-		if (eX == tX && eY - 1 == tY) {
-			return true;
-		}
-
-		if (eX == tX && eY + 1 == tY) {
-			return true;
-		}
-
-		return false;
 	}
 }

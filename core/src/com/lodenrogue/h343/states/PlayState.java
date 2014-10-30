@@ -35,10 +35,10 @@ public class PlayState extends State {
 	@Override
 	public void create() {
 		EntityDefinitions.initDefinitions("GlyphDefinitions.def");
-		initCamera();
-		initFont();
-		initMap();
-		initPlayer();
+		createCamera();
+		createFont();
+		createMap();
+		createPlayer();
 		GameManager.init(map, entities);
 	}
 
@@ -78,23 +78,23 @@ public class PlayState extends State {
 		font.draw(batch, "Arrow keys to move. E to open doors. (O)", x, y - 20f);
 	}
 
-	private void initCamera() {
+	private void createCamera() {
 		camera = new GameCamera();
 		camera.setToOrtho(false, H343.WIDTH, H343.HEIGHT);
 		H343.viewport.setCamera(camera);
 		GameManager.setCamera(camera);
 	}
 
-	private void initFont() {
+	private void createFont() {
 		font = new BitmapFont();
 		// font.setFixedWidthGlyphs(EntityDefinitions.getAllGlyphs());
 	}
 
-	private void initMap() {
+	private void createMap() {
 		map = new Map(MapLoader.load("level1.map", entities));
 	}
 
-	private void initPlayer() {
+	private void createPlayer() {
 		entities.add(EntityFactory.createEntity('@', 22, 12));
 	}
 }

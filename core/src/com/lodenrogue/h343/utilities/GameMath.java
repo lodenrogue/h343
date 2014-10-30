@@ -1,5 +1,6 @@
 package com.lodenrogue.h343.utilities;
 
+
 public class GameMath {
 
 	private GameMath() {

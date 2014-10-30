@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.lodenrogue.h343.states.GameStateManager;
 import com.lodenrogue.h343.states.PlayState;
+import com.lodenrogue.h343.utilities.managers.GameManager;
 import com.lodenrogue.h343.utilities.managers.SpriteManager;
 
 /**
@@ -14,7 +15,7 @@ import com.lodenrogue.h343.utilities.managers.SpriteManager;
  */
 public class H343 extends ApplicationAdapter {
 	public static final int WIDTH = 520;
-	public static final int HEIGHT = 340;
+	public static final int HEIGHT = 320;
 	public static final String TITLE = "h343";
 	public static FitViewport viewport;
 
@@ -28,6 +29,7 @@ public class H343 extends ApplicationAdapter {
 		SpriteManager.load();
 
 		gameStateManager = new GameStateManager();
+		GameManager.setGameStateManager(gameStateManager);
 		gameStateManager.popAndPush(new PlayState(gameStateManager));
 	}
 

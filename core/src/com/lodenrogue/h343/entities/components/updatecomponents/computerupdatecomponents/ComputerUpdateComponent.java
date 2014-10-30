@@ -1,23 +1,16 @@
-package com.lodenrogue.h343.entities.components.updatecomponents.doorupdatecomponents;
+package com.lodenrogue.h343.entities.components.updatecomponents.computerupdatecomponents;
 
 import com.lodenrogue.h343.entities.Entity;
 import com.lodenrogue.h343.entities.components.updatecomponents.PositionUpdateComponent;
 import com.lodenrogue.h343.entities.components.updatecomponents.UpdateComponent;
 
-/**
- * Update component for door entity.
- * 
- * @author Miguel Hernandez
- *
- */
-public class DoorUpdateComponent implements UpdateComponent {
+public class ComputerUpdateComponent implements UpdateComponent {
+	private UpdateComponent activate = new ComputerActivate();
 	private UpdateComponent position = new PositionUpdateComponent();
-	private UpdateComponent openAction = new DoorOpen();
 
 	@Override
 	public void update(Entity entity) {
+		activate.update(entity);
 		position.update(entity);
-		openAction.update(entity);
 	}
-
 }

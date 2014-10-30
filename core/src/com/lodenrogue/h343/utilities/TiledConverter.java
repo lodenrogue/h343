@@ -16,31 +16,36 @@ import java.util.ArrayList;
 
 public class TiledConverter {
 	private ArrayList<String> lines = new ArrayList<>();
+	private String path;
 
 	public TiledConverter() {
-
+		path = this.getClass().getClassLoader().getResource("").getPath();
+		path = path.substring(0, path.indexOf("core"));
+		path += "android/assets/";
 	}
 
 	public static void main(String[] args) {
+
 		TiledConverter t = new TiledConverter();
-		t.convert("assets/tiledOutput.lua", "assets/level1.map");
+		System.out.println();
+		t.convert("tiledOutput.lua", "level1.map");
 	}
 
-	public void convert(String pathToFile, String targetPathName) {
-		lines = readFile(pathToFile);
+	public void convert(String fileName, String targetFileName) {
+		lines = readFile(fileName);
 		lines = cleanSpaces(lines);
 		lines = changeGlyphs(lines);
-		export(targetPathName, lines);
+		export(targetFileName, lines);
 
-		System.out.println(targetPathName + " written with the following data: ");
+		System.out.println(path+ targetFileName + " written with the following data: ");
 		for (String s : lines) {
 			System.out.println(s);
 		}
 	}
 
-	private void export(String targetPathName, ArrayList<String> outputLines) {
+	private void export(String targetFileName, ArrayList<String> outputLines) {
 		try {
-			BufferedWriter out = new BufferedWriter(new FileWriter(targetPathName));
+			BufferedWriter out = new BufferedWriter(new FileWriter(path + targetFileName));
 			for (int i = 0; i < outputLines.size() - 2; i++) {
 				out.write(outputLines.get(i) + "\n");
 			}
@@ -93,10 +98,10 @@ public class TiledConverter {
 		return output;
 	}
 
-	private ArrayList<String> readFile(String pathToFile) {
+	private ArrayList<String> readFile(String fileName) {
 		ArrayList<String> inputLines = new ArrayList<String>();
 		try {
-			BufferedReader in = new BufferedReader(new FileReader(pathToFile));
+			BufferedReader in = new BufferedReader(new FileReader(path + fileName));
 			String line;
 			boolean record = false;
 
